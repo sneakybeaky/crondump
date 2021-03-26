@@ -1,6 +1,7 @@
-package crondump
+package crondump_test
 
 import (
+	"crondump"
 	"github.com/google/go-cmp/cmp"
 	"testing"
 )
@@ -21,7 +22,7 @@ func TestMinute(t *testing.T) {
 
 	for desc, tc := range tests {
 		t.Run(desc, func(t *testing.T) {
-			got, err := Minute(tc.input)
+			got, err := crondump.Minute(tc.input)
 
 			errorReceived := err != nil
 
