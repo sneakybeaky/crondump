@@ -16,8 +16,8 @@ type expander interface {
 	expand() (string, error)
 }
 
-// Minute expands the input in cron syntax to show the minutes included
-func Minute(input string) (string, error) {
+// ExpandMinute expands the input in cron syntax to show the minutes included
+func ExpandMinute(input string) (string, error) {
 
 	l, err := isList(input)
 

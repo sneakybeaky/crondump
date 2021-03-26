@@ -30,7 +30,7 @@ func TestMinute(t *testing.T) {
 
 	for desc, tc := range tests {
 		t.Run(desc, func(t *testing.T) {
-			got, err := crondump.Minute(tc.input)
+			got, err := crondump.ExpandMinute(tc.input)
 
 			errorReceived := err != nil
 
