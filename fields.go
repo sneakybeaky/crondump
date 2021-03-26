@@ -10,6 +10,7 @@ import (
 
 const (
 	maxMinute = 59
+	minMinute = 0
 )
 
 type expander interface {
@@ -27,7 +28,7 @@ func ExpandMinute(input string) (string, error) {
 		}
 		return ml.expand()
 
-	case isRange(input):
+	case isRange(input) || isUnlimitedRange(input):
 		mr, err := newMinuteRange(input)
 		if err != nil {
 			return "", err
@@ -51,6 +52,11 @@ func isRange(input string) bool {
 	return reg.MatchString(input)
 }
 
+func isUnlimitedRange(input string) bool {
+	reg := regexp.MustCompile(`\*`)
+	return reg.MatchString(input)
+}
+
 func isList(input string) bool {
 	reg := regexp.MustCompile(`[\d]+,[\d]+`)
 	return reg.MatchString(input)
@@ -67,7 +73,7 @@ func newMinute(cronexp string) (minute, error) {
 		return minute{}, err
 	}
 
-	if m < 0 || m > maxMinute {
+	if m < minMinute || m > maxMinute {
 		return minute{}, errors.New("minute must be between 0 and 59")
 	}
 
@@ -84,6 +90,14 @@ type minuteRange struct {
 }
 
 func newMinuteRange(cronexp string) (minuteRange, error) {
+
+	if isUnlimitedRange(cronexp) {
+		return minuteRange{
+			from: minMinute,
+			to:   maxMinute,
+		}, nil
+	}
+
 	span := strings.Split(cronexp, `-`)
 
 	from, err := strconv.Atoi(span[0])

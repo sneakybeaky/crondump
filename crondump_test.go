@@ -28,6 +28,7 @@ func TestMinute(t *testing.T) {
 		"list of two minutes":               {input: "1,2", want: "1 2"},
 		"list of three minutes":             {input: "1,2,3", want: "1 2 3"},
 		"list of a range and single minute": {input: "1-2,10", want: "1 2 10"},
+		"Unrestricted range":                {input: "*", want: allMinutes()},
 	}
 
 	for desc, tc := range tests {
