@@ -19,49 +19,41 @@ type expander interface {
 // ExpandMinute expands the input in cron syntax to show the minutes included
 func ExpandMinute(input string) (string, error) {
 
-	l, err := isList(input)
-
-	if err != nil {
-		return "", err
-	}
-
-	if l {
+	switch {
+	case isList(input):
 		ml, err := newMinuteList(input)
 		if err != nil {
 			return "", err
 		}
 		return ml.expand()
-	}
 
-	r, err := isRange(input)
-
-	if err != nil {
-		return "", err
-	}
-
-	if r {
+	case isRange(input):
 		mr, err := newMinuteRange(input)
 		if err != nil {
 			return "", err
 		}
 		return mr.expand()
+
+	default:
+		m, err := newMinute(input)
+
+		if err != nil {
+			return "", err
+		}
+
+		return m.expand()
+
 	}
-
-	m, err := newMinute(input)
-
-	if err != nil {
-		return "", err
-	}
-
-	return m.expand()
 }
 
-func isRange(input string) (bool, error) {
-	return regexp.MatchString(`[\d]+-[\d]+`, input)
+func isRange(input string) bool {
+	reg := regexp.MustCompile(`[\d]+-[\d]+`)
+	return reg.MatchString(input)
 }
 
-func isList(input string) (bool, error) {
-	return regexp.MatchString(`[\d]+,[\d]+`, input)
+func isList(input string) bool {
+	reg := regexp.MustCompile(`[\d]+,[\d]+`)
+	return reg.MatchString(input)
 }
 
 type minute struct {
