@@ -18,7 +18,11 @@ func Minute(input string) (string, error) {
 	}
 
 	if r {
-		return minuteRange(input)
+		mr, err := newMinuteRange(input)
+		if err != nil {
+			return "", err
+		}
+		return mr.expand()
 	}
 
 	i, err := strconv.Atoi(input)
@@ -38,23 +42,34 @@ func isRange(input string) (bool, error) {
 	return regexp.MatchString(`[\d]+-[\d]+`, input)
 }
 
-func minuteRange(input string) (string, error) {
-	span := strings.Split(input, `-`)
+type minuteRange struct {
+	from int
+	to   int
+}
+
+func newMinuteRange(cronexp string) (*minuteRange, error) {
+	span := strings.Split(cronexp, `-`)
 
 	from, err := strconv.Atoi(span[0])
 	if err != nil {
-		return "", fmt.Errorf("unable to parse range '%s' : %v", input, err)
+		return nil, fmt.Errorf("unable to parse range '%s' : %v", cronexp, err)
 	}
 
 	to, err := strconv.Atoi(span[1])
 	if err != nil {
-		return "", fmt.Errorf("unable to parse range '%s' : %v", input, err)
+		return nil, fmt.Errorf("unable to parse range '%s' : %v", cronexp, err)
 	}
 
+	return &minuteRange{
+		from: from,
+		to:   to,
+	}, nil
+}
+
+func (mr *minuteRange) expand() (string, error) {
 	var sb strings.Builder
-	for i := from; i <= to; i++ {
+	for i := mr.from; i <= mr.to; i++ {
 		sb.WriteString(fmt.Sprintf("%d ", i))
 	}
 	return strings.Trim(sb.String(), " "), nil
-
 }
