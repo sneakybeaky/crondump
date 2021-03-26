@@ -83,30 +83,30 @@ type minuteRange struct {
 	to   int
 }
 
-func newMinuteRange(cronexp string) (*minuteRange, error) {
+func newMinuteRange(cronexp string) (minuteRange, error) {
 	span := strings.Split(cronexp, `-`)
 
 	from, err := strconv.Atoi(span[0])
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse range '%s' : %v", cronexp, err)
+		return minuteRange{}, fmt.Errorf("unable to parse range '%s' : %v", cronexp, err)
 	}
 
 	to, err := strconv.Atoi(span[1])
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse range '%s' : %v", cronexp, err)
+		return minuteRange{}, fmt.Errorf("unable to parse range '%s' : %v", cronexp, err)
 	}
 
 	if to > maxMinute {
-		return nil, fmt.Errorf("range %s ends too high at %d", cronexp, to)
+		return minuteRange{}, fmt.Errorf("range %s ends too high at %d", cronexp, to)
 	}
 
-	return &minuteRange{
+	return minuteRange{
 		from: from,
 		to:   to,
 	}, nil
 }
 
-func (mr *minuteRange) expand() (string, error) {
+func (mr minuteRange) expand() (string, error) {
 	var sb strings.Builder
 	for i := mr.from; i <= mr.to; i++ {
 		sb.WriteString(fmt.Sprintf("%d ", i))
@@ -118,9 +118,9 @@ type minuteList struct {
 	minutes []expander
 }
 
-func newMinuteList(cronexp string) (*minuteList, error) {
+func newMinuteList(cronexp string) (minuteList, error) {
 
-	ml := &minuteList{}
+	ml := minuteList{}
 
 	terms := strings.Split(cronexp, `,`)
 
@@ -130,7 +130,7 @@ func newMinuteList(cronexp string) (*minuteList, error) {
 		case isRange(term):
 			r, err := newMinuteRange(term)
 			if err != nil {
-				return nil, fmt.Errorf("unable to parse list '%s' : %v", cronexp, err)
+				return minuteList{}, fmt.Errorf("unable to parse list '%s' : %v", cronexp, err)
 			}
 
 			ml.minutes = append(ml.minutes, r)
@@ -139,7 +139,7 @@ func newMinuteList(cronexp string) (*minuteList, error) {
 			m, err := newMinute(term)
 
 			if err != nil {
-				return nil, fmt.Errorf("unable to parse list '%s' : %v", cronexp, err)
+				return minuteList{}, fmt.Errorf("unable to parse list '%s' : %v", cronexp, err)
 			}
 
 			ml.minutes = append(ml.minutes, m)
@@ -151,7 +151,7 @@ func newMinuteList(cronexp string) (*minuteList, error) {
 
 }
 
-func (ml *minuteList) expand() (string, error) {
+func (ml minuteList) expand() (string, error) {
 	var sb strings.Builder
 
 	for _, m := range ml.minutes {
