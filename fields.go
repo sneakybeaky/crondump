@@ -28,7 +28,7 @@ func ExpandMinute(input string) (string, error) {
 		}
 		return ml.expand()
 
-	case isRange(input) || isUnlimitedRange(input):
+	case isRange(input) || isUnrestrictedRange(input):
 		mr, err := newMinuteRange(input)
 		if err != nil {
 			return "", err
@@ -52,7 +52,7 @@ func isRange(input string) bool {
 	return reg.MatchString(input)
 }
 
-func isUnlimitedRange(input string) bool {
+func isUnrestrictedRange(input string) bool {
 	reg := regexp.MustCompile(`\*`)
 	return reg.MatchString(input)
 }
@@ -91,7 +91,7 @@ type minuteRange struct {
 
 func newMinuteRange(cronexp string) (minuteRange, error) {
 
-	if isUnlimitedRange(cronexp) {
+	if isUnrestrictedRange(cronexp) {
 		return minuteRange{
 			from: minMinute,
 			to:   maxMinute,
