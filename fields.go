@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+const (
+	maxMinute = 59
+)
+
 // Minute expands the input in cron syntax to show the minutes included
 func Minute(input string) (string, error) {
 
@@ -31,8 +35,8 @@ func Minute(input string) (string, error) {
 		return "", err
 	}
 
-	if i < 0 || i > 59 {
-		return "", errors.New("minute must be between 0 and 59")
+	if i < 0 || i > maxMinute {
+		return "", errors.New("minute must be between 0 and maxMinute")
 	}
 
 	return input, nil
@@ -60,7 +64,7 @@ func newMinuteRange(cronexp string) (*minuteRange, error) {
 		return nil, fmt.Errorf("unable to parse range '%s' : %v", cronexp, err)
 	}
 
-	if to > 59 {
+	if to > maxMinute {
 		return nil, fmt.Errorf("range %s ends too high at %d", cronexp, to)
 	}
 
