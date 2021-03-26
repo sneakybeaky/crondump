@@ -2,7 +2,9 @@ package crondump_test
 
 import (
 	"crondump"
+	"fmt"
 	"github.com/google/go-cmp/cmp"
+	"strings"
 	"testing"
 )
 
@@ -18,6 +20,7 @@ func TestMinute(t *testing.T) {
 		"minute too large":      {input: "60", errExpected: true},
 		"minute too small":      {input: "-1", errExpected: true},
 		"range of two minutes":  {input: "0-1", want: "0 1"},
+		"range of all minutes":  {input: "0-59", want: allMinutes()},
 	}
 
 	for desc, tc := range tests {
@@ -37,4 +40,13 @@ func TestMinute(t *testing.T) {
 		})
 	}
 
+}
+
+func allMinutes() string {
+	var sb strings.Builder
+
+	for i := 0; i < 60; i++ {
+		sb.WriteString(fmt.Sprintf("%d ", i))
+	}
+	return strings.TrimSpace(sb.String())
 }
