@@ -15,18 +15,19 @@ func TestMinute(t *testing.T) {
 		errExpected bool
 		want        string
 	}{
-		"single valid minute":   {input: "0", want: "0"},
-		"minute on upper value": {input: "59", want: "59"},
-		"minute too large":      {input: "60", errExpected: true},
-		"minute too small":      {input: "-1", errExpected: true},
-		"range of two minutes":  {input: "0-1", want: "0 1"},
-		"range of all minutes":  {input: "0-59", want: allMinutes()},
-		"range ends too high":   {input: "0-60", errExpected: true},
-		"range starts too low":  {input: "-1-59", errExpected: true},
-		"range too high":        {input: "60-61", errExpected: true},
-		"range too low":         {input: "-10--1", errExpected: true},
-		"list of two minutes":   {input: "1,2", want: "1 2"},
-		"list of three minutes": {input: "1,2,3", want: "1 2 3"},
+		"single valid minute":               {input: "0", want: "0"},
+		"minute on upper value":             {input: "59", want: "59"},
+		"minute too large":                  {input: "60", errExpected: true},
+		"minute too small":                  {input: "-1", errExpected: true},
+		"range of two minutes":              {input: "0-1", want: "0 1"},
+		"range of all minutes":              {input: "0-59", want: allMinutes()},
+		"range ends too high":               {input: "0-60", errExpected: true},
+		"range starts too low":              {input: "-1-59", errExpected: true},
+		"range too high":                    {input: "60-61", errExpected: true},
+		"range too low":                     {input: "-10--1", errExpected: true},
+		"list of two minutes":               {input: "1,2", want: "1 2"},
+		"list of three minutes":             {input: "1,2,3", want: "1 2 3"},
+		"list of a range and single minute": {input: "1-2,10", want: "1 2 10"},
 	}
 
 	for desc, tc := range tests {

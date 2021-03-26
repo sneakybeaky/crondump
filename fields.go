@@ -125,13 +125,26 @@ func newMinuteList(cronexp string) (*minuteList, error) {
 	terms := strings.Split(cronexp, `,`)
 
 	for _, term := range terms {
-		m, err := newMinute(term)
 
-		if err != nil {
-			return nil, fmt.Errorf("unable to parse list '%s' : %v", cronexp, err)
+		switch {
+		case isRange(term):
+			r, err := newMinuteRange(term)
+			if err != nil {
+				return nil, fmt.Errorf("unable to parse list '%s' : %v", cronexp, err)
+			}
+
+			ml.minutes = append(ml.minutes, r)
+
+		default:
+			m, err := newMinute(term)
+
+			if err != nil {
+				return nil, fmt.Errorf("unable to parse list '%s' : %v", cronexp, err)
+			}
+
+			ml.minutes = append(ml.minutes, m)
 		}
 
-		ml.minutes = append(ml.minutes, m)
 	}
 
 	return ml, nil
