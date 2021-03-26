@@ -26,6 +26,7 @@ func TestMinute(t *testing.T) {
 		"range too high":        {input: "60-61", errExpected: true},
 		"range too low":         {input: "-10--1", errExpected: true},
 		"list of two minutes":   {input: "1,2", want: "1 2"},
+		"list of three minutes": {input: "1,2,3", want: "1 2 3"},
 	}
 
 	for desc, tc := range tests {
