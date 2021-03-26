@@ -71,5 +71,5 @@ func (mr *minuteRange) expand() (string, error) {
 	for i := mr.from; i <= mr.to; i++ {
 		sb.WriteString(fmt.Sprintf("%d ", i))
 	}
-	return strings.Trim(sb.String(), " "), nil
+	return strings.TrimSpace(sb.String()), nil
 }
