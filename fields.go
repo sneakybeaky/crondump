@@ -43,17 +43,13 @@ func Minute(input string) (string, error) {
 		return mr.expand()
 	}
 
-	i, err := strconv.Atoi(input)
+	m, err := newMinute(input)
 
 	if err != nil {
 		return "", err
 	}
 
-	if i < 0 || i > maxMinute {
-		return "", errors.New("minute must be between 0 and maxMinute")
-	}
-
-	return input, nil
+	return m.expand()
 }
 
 func isRange(input string) (bool, error) {
@@ -62,6 +58,28 @@ func isRange(input string) (bool, error) {
 
 func isList(input string) (bool, error) {
 	return regexp.MatchString(`[\d]+,[\d]+`, input)
+}
+
+type minute struct {
+	value string
+}
+
+func newMinute(cronexp string) (minute, error) {
+	m, err := strconv.Atoi(cronexp)
+
+	if err != nil {
+		return minute{}, err
+	}
+
+	if m < 0 || m > maxMinute {
+		return minute{}, errors.New("minute must be between 0 and 59")
+	}
+
+	return minute{value: cronexp}, nil
+}
+
+func (m minute) expand() (string, error) {
+	return m.value, nil
 }
 
 type minuteRange struct {
