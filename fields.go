@@ -60,6 +60,10 @@ func newMinuteRange(cronexp string) (*minuteRange, error) {
 		return nil, fmt.Errorf("unable to parse range '%s' : %v", cronexp, err)
 	}
 
+	if to > 59 {
+		return nil, fmt.Errorf("range %s ends too high at %d", cronexp, to)
+	}
+
 	return &minuteRange{
 		from: from,
 		to:   to,
