@@ -14,8 +14,8 @@ func Minute(input string) (string, error) {
 		return "", err
 	}
 
-	if i > 59 {
-		return "", errors.New("minute can't be larger than 59")
+	if i < 0 || i > 59 {
+		return "", errors.New("minute must be between 0 and 59")
 	}
 
 	return input, nil
