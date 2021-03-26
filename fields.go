@@ -15,6 +15,20 @@ const (
 // Minute expands the input in cron syntax to show the minutes included
 func Minute(input string) (string, error) {
 
+	l, err := isList(input)
+
+	if err != nil {
+		return "", err
+	}
+
+	if l {
+		ml, err := newMinuteList(input)
+		if err != nil {
+			return "", err
+		}
+		return ml.expand()
+	}
+
 	r, err := isRange(input)
 
 	if err != nil {
@@ -44,6 +58,10 @@ func Minute(input string) (string, error) {
 
 func isRange(input string) (bool, error) {
 	return regexp.MatchString(`[\d]+-[\d]+`, input)
+}
+
+func isList(input string) (bool, error) {
+	return regexp.MatchString(`[\d]+,[\d]+`, input)
 }
 
 type minuteRange struct {
@@ -79,5 +97,33 @@ func (mr *minuteRange) expand() (string, error) {
 	for i := mr.from; i <= mr.to; i++ {
 		sb.WriteString(fmt.Sprintf("%d ", i))
 	}
+	return strings.TrimSpace(sb.String()), nil
+}
+
+type minuteList struct {
+	minutes []string
+}
+
+func newMinuteList(cronexp string) (*minuteList, error) {
+
+	ml := &minuteList{}
+
+	terms := strings.Split(cronexp, `,`)
+
+	for _, term := range terms {
+		ml.minutes = append(ml.minutes, term)
+	}
+
+	return ml, nil
+
+}
+
+func (ml *minuteList) expand() (string, error) {
+	var sb strings.Builder
+
+	for _, m := range ml.minutes {
+		sb.WriteString(fmt.Sprintf("%s ", m))
+	}
+
 	return strings.TrimSpace(sb.String()), nil
 }
