@@ -12,6 +12,10 @@ const (
 	maxMinute = 59
 )
 
+type expander interface {
+	expand() (string, error)
+}
+
 // Minute expands the input in cron syntax to show the minutes included
 func Minute(input string) (string, error) {
 
@@ -119,7 +123,7 @@ func (mr *minuteRange) expand() (string, error) {
 }
 
 type minuteList struct {
-	minutes []string
+	minutes []expander
 }
 
 func newMinuteList(cronexp string) (*minuteList, error) {
@@ -129,7 +133,13 @@ func newMinuteList(cronexp string) (*minuteList, error) {
 	terms := strings.Split(cronexp, `,`)
 
 	for _, term := range terms {
-		ml.minutes = append(ml.minutes, term)
+		m, err := newMinute(term)
+
+		if err != nil {
+			return nil, fmt.Errorf("unable to parse list '%s' : %v", cronexp, err)
+		}
+
+		ml.minutes = append(ml.minutes, m)
 	}
 
 	return ml, nil
@@ -140,7 +150,13 @@ func (ml *minuteList) expand() (string, error) {
 	var sb strings.Builder
 
 	for _, m := range ml.minutes {
-		sb.WriteString(fmt.Sprintf("%s ", m))
+
+		s, err := m.expand()
+		if err != nil {
+			return "", fmt.Errorf("unable to expand list : %v", err)
+		}
+
+		sb.WriteString(fmt.Sprintf("%s ", s))
 	}
 
 	return strings.TrimSpace(sb.String()), nil
